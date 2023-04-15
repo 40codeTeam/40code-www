@@ -512,7 +512,11 @@
 						pw: ""
 					},
 					go: () => {
-						location.href = "#page=sign&url=" + btoa(location.href)
+					if(location.href.indexOf('page=sign')==-1)
+						    location.href = "#page=sign&url=" + btoa(location.href)
+						else{
+						    location.href = "/#page=sign'
+						}
 					}
 				}
 			},
