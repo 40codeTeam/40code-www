@@ -1041,7 +1041,7 @@
                                 product: 'bind',
                             }, function (gt2) {
                                 window.myCaptcha2=window.gt2 = gt2
-                                gt
+                                gt2
                                     .appendTo("#c2")
                                     .onSuccess(function (e) {
                                         var result = gt2.getValidate();
