@@ -479,7 +479,7 @@
 					code: [e => /^\d{6}$/.test(e) || "请输入6位数字验证码"],
 					sendcode: () => {
 						!0 === v.sign.email[0]($("#email")
-							.val()) ? (myCaptcha2.reset(), myCaptcha2.show()) : alert("请输入正确的邮箱或手机号")
+							.val()) ? (gt.reset() && gt.showCaptcha()) : alert("请输入正确的邮箱或手机号")
 					},
 					state: 0,
 					s: e => {
@@ -504,7 +504,7 @@
 							},
 							p: "sign"
 						}, (function(t) {
-							pagecz.sign(), 1 == t.code ? 0 == e ? (location.href = getQueryString("url") ? atob(getQueryString("url")) : "#", alert(t.msg), setCookie("token", t.token, 30), getuserinfo()) : (alert(t.msg), v.sign.state = 0) : alert(t.msg, 8e3)
+							gt.reset(); 1 == t.code ? 0 == e ? (location.href = getQueryString("url") ? atob(getQueryString("url")) : "#", alert(t.msg), setCookie("token", t.token, 30), getuserinfo()) : (alert(t.msg), v.sign.state = 0) : alert(t.msg, 8e3)
 						})) : alert("请先完成验证码")
 					},
 					data: {
@@ -1010,7 +1010,7 @@
 						// 			.click(), myCaptcha2.reload()
 						// 	}
                         // })
-                        var captchaId = "647f5ed2ed8acb4be36784e01556bb71"   // gt_id
+                        var captchaId = "c0723d25371bf71359761aa06f6075ed"   // gt_id
                         var product = "float"
                             if (product !== 'bind') {
                             $('#btn').remove();
@@ -1037,7 +1037,7 @@
                         });
                         initGeetest4({
                             captchaId: captchaId,
-                            product: 'popup',
+                            product: 'bind',
                         }, function (gt) {
                             window.myCaptcha2=window.gt2 = gt
                             gt
