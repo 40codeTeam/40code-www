@@ -505,7 +505,7 @@
 							p: "sign"
 						}, (function(t) {
 							gt.reset(); 1 == t.code ? 0 == e ? (location.href = getQueryString("url") ? atob(getQueryString("url")) : "#", alert(t.msg), setCookie("token", t.token, 30), getuserinfo()) : (alert(t.msg), v.sign.state = 0) : alert(t.msg, 8e3)
-						})) : gt2.reset() && (gt2.a=1) && setTimeout(()=>gt2.showCaptcha(),200)
+						})) :  alert("请先完成图形验证码")//gt2.reset() && (gt2.a=1) && setTimeout(()=>gt2.showCaptcha(),200)
 					},
 					data: {
 						email: "",
