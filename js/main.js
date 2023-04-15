@@ -473,19 +473,19 @@
 					select: ["最新发布", "最多金币", "最多成员"]
 				}
 			},
-			545: e => {
+			545: (e,t) => {
 				e.exports = {
 					email: [e => /^1[3456789]\d{9}$|^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(e) || "请输入正确的邮箱或手机号"],
 					code: [e => /^\d{6}$/.test(e) || "请输入6位数字验证码"],
 					sendcode: () => {
 						!0 === v.sign.email[0]($("#email")
-							.val()) ? (gt.reset() && gt.showCaptcha()) : alert("请输入正确的邮箱或手机号")
+							.val()) ? ( gt2.reset() && setTimeout(()=>gt2.showCaptcha(),200)) : alert("请输入正确的邮箱或手机号")
 					},
 					state: 0,
 					s: e => {
 						v.sign.state = e
 					},
-					l: function(e) {
+					l: function(e,t) {
 						v.sign.token ? post({
 							url: "user/" + ["login", "signup2", "signup2"][e],
 							data: {
@@ -493,7 +493,7 @@
 									.val(),
 								pw: $("#pw")
 									.val(),
-								t2: v.sign.token,
+								t2: t || v.sign.token,
 								i: getCookie("i"),
 								nickname: $("#snickname")
 									.val(),
@@ -505,7 +505,7 @@
 							p: "sign"
 						}, (function(t) {
 							gt.reset(); 1 == t.code ? 0 == e ? (location.href = getQueryString("url") ? atob(getQueryString("url")) : "#", alert(t.msg), setCookie("token", t.token, 30), getuserinfo()) : (alert(t.msg), v.sign.state = 0) : alert(t.msg, 8e3)
-						})) : alert("请先完成验证码")
+						})) : gt2.reset() && (gt2.a=1) && setTimeout(()=>gt2.showCaptcha(),200)
 					},
 					data: {
 						email: "",
@@ -1038,23 +1038,28 @@
                         initGeetest4({
                             captchaId: captchaId,
                             product: 'bind',
-                        }, function (gt) {
-                            window.myCaptcha2=window.gt2 = gt
+                        }, function (gt2) {
+                            window.myCaptcha2=window.gt2 = gt2
                             gt
                                 .appendTo("#c2")
                                 .onSuccess(function (e) {
-                                    var result = gt.getValidate();
-                                    post({
-										url: "user/sendcode",
-										data: {
-											email: $("#email")
-												.val(),
-											t2: result
-										},
-										p: "sendcode"
-									}, (function(e) {
-										alert(e.msg, 8e3)
-									}))
+                                    var result = gt2.getValidate();
+                                    // if(!gt2.a){
+                                        post({
+                                            url: "user/sendcode",
+                                            data: {
+                                                email: $("#email")
+                                                    .val(),
+                                                t2: result
+                                            },
+                                            p: "sendcode"
+                                        }, (function(e) {
+                                            alert(e.msg, 8e3)
+                                        }))
+                                    // }else{
+                                    //     v.sign.l()
+                                    // }
+                                    // gt2.a=0;
                                 })
                     
                             $('#c2 > #btn').click(function () {
