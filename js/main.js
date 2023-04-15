@@ -1035,40 +1035,42 @@
                                 gt.reset();
                             })
                         });
-                        initGeetest4({
-                            captchaId: captchaId,
-                            product: 'bind',
-                        }, function (gt2) {
-                            window.myCaptcha2=window.gt2 = gt2
-                            gt
-                                .appendTo("#c2")
-                                .onSuccess(function (e) {
-                                    var result = gt2.getValidate();
-                                    // if(!gt2.a){
-                                        post({
-                                            url: "user/sendcode",
-                                            data: {
-                                                email: $("#email")
-                                                    .val(),
-                                                t2: result
-                                            },
-                                            p: "sendcode"
-                                        }, (function(e) {
-                                            alert(e.msg, 8e3)
-                                        }))
-                                    // }else{
-                                    //     v.sign.l()
-                                    // }
-                                    // gt2.a=0;
+                        setTimeout(()=>{
+                            initGeetest4({
+                                captchaId: captchaId,
+                                product: 'bind',
+                            }, function (gt2) {
+                                window.myCaptcha2=window.gt2 = gt2
+                                gt
+                                    .appendTo("#c2")
+                                    .onSuccess(function (e) {
+                                        var result = gt2.getValidate();
+                                        // if(!gt2.a){
+                                            post({
+                                                url: "user/sendcode",
+                                                data: {
+                                                    email: $("#email")
+                                                        .val(),
+                                                    t2: result
+                                                },
+                                                p: "sendcode"
+                                            }, (function(e) {
+                                                alert(e.msg, 8e3)
+                                            }))
+                                        // }else{
+                                        //     v.sign.l()
+                                        // }
+                                        // gt2.a=0;
+                                    })
+                        
+                                $('#c2 > #btn').click(function () {
+                                    gt2.showBox();
                                 })
-                    
-                            $('#c2 > #btn').click(function () {
-                                gt2.showBox();
-                            })
-                            $('#c2 > #reset_btn').click(function () {
-                                gt2.reset();
-                            })
-                        });
+                                $('#c2 > #reset_btn').click(function () {
+                                    gt2.reset();
+                                })
+                            });
+                        },200)
 					}), 200)
 				}
 			},
