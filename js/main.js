@@ -1049,7 +1049,7 @@
 										data: {
 											email: $("#email")
 												.val(),
-											token: result
+											t2: result
 										},
 										p: "sendcode"
 									}, (function(e) {
