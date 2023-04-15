@@ -418,7 +418,7 @@
 				}, {
 					title: "退出登录",
 					c: function() {
-						document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 GMT", console.log("清除cookie"), location.href = ""
+						document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=.40code.com", console.log("清除cookie"), location.href = ""
 					}
 				}]
 			},
@@ -1022,36 +1022,46 @@
                         }, function (gt) {
                             window.myCaptcha=window.gt = gt
                             gt
-                                .appendTo("#captcha")
+                                .appendTo("#c1")
                                 .onSuccess(function (e) {
                                     var result = gt.getValidate();
                                     v.sign.token = result
                                 })
                     
-                            $('#btn').click(function () {
+                            $('#c1 > #btn').click(function () {
                                 gt.showBox();
                             })
-                            $('#reset_btn').click(function () {
+                            $('#c1 > #reset_btn').click(function () {
                                 gt.reset();
                             })
                         });
                         initGeetest4({
                             captchaId: captchaId,
-                            product: product,
+                            product: 'popup',
                         }, function (gt) {
                             window.myCaptcha2=window.gt2 = gt
                             gt
-                                .appendTo("#captcha")
+                                .appendTo("#c2")
                                 .onSuccess(function (e) {
                                     var result = gt.getValidate();
-                                    v.sign.token = result
+                                    post({
+										url: "user/sendcode",
+										data: {
+											email: $("#email")
+												.val(),
+											token: result
+										},
+										p: "sendcode"
+									}, (function(e) {
+										alert(e.msg, 8e3)
+									}))
                                 })
                     
-                            $('#btn').click(function () {
-                                gt.showBox();
+                            $('#c2 > #btn').click(function () {
+                                gt2.showBox();
                             })
-                            $('#reset_btn').click(function () {
-                                gt.reset();
+                            $('#c2 > #reset_btn').click(function () {
+                                gt2.reset();
                             })
                         });
 					}), 200)
