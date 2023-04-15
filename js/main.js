@@ -479,7 +479,7 @@
 					code: [e => /^\d{6}$/.test(e) || "请输入6位数字验证码"],
 					sendcode: () => {
 						!0 === v.sign.email[0]($("#email")
-							.val()) ? ( gt2.reset() && setTimeout(()=>gt2.showCaptcha(),200)) : alert("请输入正确的邮箱或手机号")
+							.val()) ? ( gt2.showCaptcha()) : alert("请输入正确的邮箱或手机号")
 					},
 					state: 0,
 					s: e => {
