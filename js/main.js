@@ -515,7 +515,7 @@
 					if(location.href.indexOf('page=sign')==-1)
 						    location.href = "#page=sign&url=" + btoa(location.href)
 						else{
-						    location.href = "/#page=sign'
+						    location.href = "/#page=sign"
 						}
 					}
 				}
