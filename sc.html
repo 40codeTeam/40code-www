@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="https://cdn.staticfile.org/MaterialDesign-Webfont/6.6.96/css/materialdesignicons.min.css"
+        rel="stylesheet">
+    <link href="https://cdn.staticfile.org/vuetify/2.5.8/vuetify.min.css" rel="stylesheet">
+    <link href="https://cdn.staticfile.org/viewerjs/1.10.5/viewer.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/other/favicon.ico">
+    <script src="https://cdn.staticfile.org/vue/2.6.9/vue.js"></script>
+    <script src="https://cdn.staticfile.org/vuetify/2.5.8/vuetify.min.js"></script>
+</head>
+
+<body>
+    <v-app id="app">
+        <template>
+
+            <!-- 右侧作品列表 -->
+            <v-content>
+                <v-container>
+                    <v-list dense>
+                        <v-list-item v-for="folder in folders" :key="folder.id" @click="selectFolder(folder.id)"
+                            :style="selectedFolderId==folder.id?'background-color:#1976d2;color:white':null">
+                            <v-list-item-title>{{ folder.name }}</v-list-item-title>
+                            <v-list-item-subtitle v-if="folder.is_private">（仅自己可见）</v-list-item-subtitle>
+                        </v-list-item>
+                    </v-list>
+                    <v-row>
+                        <v-col cols="6">
+                            <v-btn block @click="createFolder" color="primary">新建收藏夹</v-btn>
+                        </v-col>
+                        <v-col cols="6">
+                            <v-btn block v-if="selectedFolderId === null" disabled>
+                                请先选择收藏夹
+                            </v-btn>
+                            <v-btn block v-else @click="addWork" color="primary" v-bind:disabled="selectedFolderId === null">
+                                确认收藏
+                            </v-btn>
+                        </v-col>
+                        <!-- <v-divider></v-divider> -->
+                        <!-- <v-card v-if="selectedFolderId === null">
+                        <v-card-text class="text-center">
+                            请先选择收藏夹
+                        </v-card-text>
+                    </v-card>
+                    <v-card v-else>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn @click="addWork" color="primary" v-bind:disabled="selectedFolderId === null">确认收藏
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card> -->
+                </v-container>
+            </v-content>
+        </template>
+    </v-app>
+
+    <script>
+        var $ = top.$, getCookie = top.getCookie, apihost = top.apihost, workId = top.v.workview.id,get=top.get,post=top.post;
+        window.v = new Vue({
+            el: '#app',
+            data: {
+                drawer: true,
+                folders: [],
+                selectedFolderId: null,
+                selectedFolderName: null,
+                selectedFolderWorks: []
+            },
+            vuetify: new Vuetify({
+                theme: {
+                    light: {
+                        primary: '#3f51b5',
+                        secondary: '#03A9F4',
+                        accent: '#EC407A',
+                        error: '#F44336',
+                    },
+                }
+            }),
+            methods: {
+                get: () => {
+                    get({
+                        url: '/collections/folders',
+                        data: {
+                        },
+                    }, (d) => {
+                        var { folders } = d;
+                        v.folders = folders
+                    })
+                },
+                // 选择收藏夹
+                async selectFolder(folderId) {
+                    v.selectedFolderId = folderId;
+                    v.selectedFolderName = v.folders.find(folder => folder.id === folderId).name;
+                    // this.selectedFolderWorks = [];
+                    // // 获取当前选中收藏夹的作品列表
+                    // const { data: works } = await axios.get(`/api/folders/${folderId}/works`, {
+                    //     headers: {
+                    //         'Authorization': `Bearer ${userToken}`
+                    //     }
+                    // });
+                    // this.selectedFolderWorks = works;
+                },
+                // 新建收藏夹
+                async createFolder() {
+                    // 弹出对话框输入收藏夹的名称
+                    const folderName = prompt('请输入收藏夹的名称');
+                    if (folderName) {
+                        // 发送 POST 请求创建收藏夹
+                        try {
+
+                            post({
+                                url: '/collections/folders',
+                                data: {
+                                    name: folderName
+                                },
+                            }, (d) => {
+                                const { folders } = d;
+                                alert('新建收藏夹成功')
+                                v.folders = folders
+                                v.selectFolder(folders[folders.length - 1].id);
+                            },(e) => {
+                            alert(e.responseJSON.error)
+                        })
+                        } catch (error) {
+                            alert('新建收藏夹失败');
+                        }
+                    }
+                },
+                // 添加作品
+                async addWork() {
+                    try {
+                        if (v.selectedFolderId === null) {
+                            return;
+                        }
+                        post({
+                            url: '/collections/collections',
+                            data: {
+                                work_id: workId,
+                                folder_id: v.selectedFolderId
+                            },
+                        }, () => {
+                            alert('添加成功')
+                            top.v.sb2.show=0
+                            top.v.workview.is_collection=1
+                            top.v.workview.num_collections++;
+                        },(e) => {
+                            alert(e.responseJSON.error)
+                        })
+                    } catch (error) {
+                        alert('添加作品失败');
+                    }
+                }
+
+            }, watch: {}
+        })
+        v.get();
+    </script>
+
+    <style scoped>
+        .folders {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .folder {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            color: rgba(0, 0, 0, 0.87);
+            transition: background-color 0.3s;
+        }
+
+        .folder:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .folder.active {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .works {
+            flex: 1;
+            overflow: auto;
+            margin: 16px;
+        }
+    </style>
+</body>
+
+
+</html>

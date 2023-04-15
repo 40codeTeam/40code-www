@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="https://cdn.staticfile.org/MaterialDesign-Webfont/6.6.96/css/materialdesignicons.min.css"
+        rel="stylesheet">
+    <link href="https://cdn.staticfile.org/vuetify/2.5.8/vuetify.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/other/favicon.ico">
+    <script src="https://cdn.staticfile.org/vue/2.6.9/vue.js"></script>
+    <script src="https://cdn.staticfile.org/vuetify/2.5.8/vuetify.min.js"></script>
+    <script src="https://cdn.staticfile.org/axios/1.2.2/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <template>
+            <v-container>
+                <v-row>
+                    <v-col>
+                        <h1>收藏夹管理</h1>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="12" v-for="folder in folders" :key="folder.id">
+                        <v-btn @click="(selectedFolder=folder.id)" block dark color="#3f51b5">
+                            {{ folder.name }}
+                            <span style="padding-left: 10px;">
+                                <span v-if="folder.is_public">公开</span>
+                                <span v-else>私有</span>
+                            </span>
+                            
+                        </v-btn>
+                        <div v-if="selectedFolder==folder.id">
+                            <v-row>
+                                <v-col cols="4">
+                                    <v-btn block color="#3f51b5" dark @click="renameFolder(selectedFolder)">
+                                        重命名
+                                    </v-btn>
+                                </v-col>
+                                <v-col cols="4">
+                                    <v-btn block color="#3f51b5" dark @click="deleteFolder(selectedFolder)">
+                                        删除
+                                    </v-btn>
+                                </v-col>
+                                <v-col cols="4">
+                                    <v-btn block color="#3f51b5" dark
+                                        @click="setFolderVisibility(selectedFolder,folder.is_public)">
+                                        {{folder.is_public?'设为私有':'设为公开'}}
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                        </div>
+    </div>
+    </v-row>
+    <!-- 新建收藏夹按钮 -->
+    <v-driver></v-driver>
+    <v-row>
+        <v-col cols="12">
+            <v-btn @click="createFolder" block color="#3f51b5" dark>新建收藏夹</v-btn>
+        </v-col>
+    </v-row>
+
+    </v-container>
+    </template>
+    </div>
+    <script>
+        var $ = top.$, getCookie = top.getCookie, apihost = top.apihost, workId = top.v.workview.id, get = top.get, post = top.post;
+        window.v = new Vue({
+            el: '#app',
+            vuetify: new Vuetify({
+                theme: {
+                    light: {
+                        primary: '#3f51b5',
+                        secondary: '#03A9F4',
+                        accent: '#EC407A',
+                        error: '#F44336',
+                    },
+                }
+            }),
+            data() {
+                return {
+                    // 收藏夹列表
+                    folders: [],
+                    // 当前选中的收藏夹
+                    selectedFolder: null,
+                    // 是否显示菜单
+                    showMenu: false,
+                    // 是否在加载收藏夹列表
+                    loading: true,
+                    // 是否显示重命名收藏夹对话框
+                    renameDialogVisible: false,
+                    // 新的收藏夹名称
+                    newFolderName: '',
+                    // 是否显示删除收藏夹对话框
+                    deleteDialogVisible: false,
+                    // 是否显示收藏夹可见性设置对话框
+                    visibilityDialogVisible: false,
+                    // 当前选中的收藏夹可见性
+                    selectedVisibility: ''
+                }
+            },
+            mounted() {
+                this.getFolderList()
+            },
+            methods: {
+                // 获取收藏夹列表
+                getFolderList: () => {
+                    this.loading = true
+                    get({
+                        url: '/collections/folders',
+                        data: {},
+                    }, (d) => {
+                        var { folders } = d;
+                        v.folders = folders
+                        this.loading = false
+                    })
+                },
+                // 打开菜单
+                openMenu: (folder) => {
+                    this.selectedFolder = folder
+                    this.showMenu = true
+                },
+                // 关闭菜单
+                closeMenu: () => {
+                    this.showMenu = false
+                },
+                // 打开重命名收藏夹对话框
+                openRenameDialog: () => {
+                    this.newFolderName = this.selectedFolder.name
+                    this.renameDialogVisible = true
+                },
+                createFolder: async () => {
+                    // 弹出对话框输入收藏夹的名称
+                    const folderName = prompt('请输入收藏夹的名称');
+                    if (folderName) {
+                        // 发送 POST 请求创建收藏夹
+                        try {
+
+                            post({
+                                url: '/collections/folders',
+                                data: {
+                                    name: folderName
+                                },
+                            }, (d) => {
+                                const { folders } = d;
+                                alert('新建收藏夹成功')
+                                v.folders = folders
+                                v.selectFolder(folders[folders.length - 1].id);
+                                v.getFolderList()
+                            }, (e) => {
+                                alert(e.responseJSON.error)
+                            })
+                        } catch (error) {
+                            alert('新建收藏夹失败');
+                        }
+                    }
+                },
+                renameFolder() {
+                    const newName = prompt('请输入收藏夹的新名称') // 获取新名称
+                    if (!newName) return // 如果新名称为空，则退出函数
+
+                    // 发送请求到后端，更新数据库中的收藏夹名称
+                    axios.patch(apihost+`/collections/folders/${ this.selectedFolder }?token=`+getCookie('token'), { name: newName })
+                        .then(() => {
+                            // 更新前端中的收藏夹名称
+                            // this.folders[this.selectedFolder].name = newName
+                            this.getFolderList()
+                        })
+                },
+                deleteFolder() {
+                    if (confirm('你确定要删除吗？'))
+                    
+                    // 发送请求到后端，删除数据库中的收藏夹
+                    axios.delete(apihost+`/collections/folders/${ this.selectedFolder }?token=`+getCookie('token'))
+                        .then(() => {
+                            // 从前端中删除收藏夹
+                            // this.folders = this.folders.filter(f => f.id !== this.selectedFolder)
+                            this.getFolderList()
+                        })
+                },
+                setFolderVisibility(folderId,public) {
+                    // 发送请求到后端，更新数据库中的收藏夹可见性
+                    axios.post(apihost+`/collections/folders/${ folderId }/public?token=`+getCookie('token'), { public:+!public })
+                    .then(() => {
+                        // 更新前端中的收藏夹可见性
+                        // this.folders[this.selectedFolder].visible 
+                        // = !this.folders[this.selectedFolder].visible
+                        this.getFolderList()
+                    })
+                }
+            }
+        })
+    </script>
+
+</body>
+
+
+</html>
