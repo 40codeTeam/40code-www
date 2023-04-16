@@ -444,7 +444,7 @@ async function compare (project0, project1, progress = () => {}) {
     <br><span class="s">项目2 的项目树相同总数:  </span>       <span class="j"> ${result.code.code1.length}</span>
     <br><span class="s">项目1 的项目树相同占比:  </span>    <span class="j"> ${+(proj0samularty / result.code.code0length * 100).toFixed(4)}%</span>
     <br><span class="s">项目2 的项目树相同占比:  </span>    <span class="j"> ${+(proj1samularty / result.code.code1length * 100).toFixed(4)}%</span>
-    <br><span class="s">项目2 抄袭 项目1 可能性:  </span>                           <span class="j"> ${final * 100}%</span>`
+    <br><span class="s">项目2 抄袭 项目1 抄袭程度:  </span>                           <span class="j"> ${final * 100}%</span>`
             }
             document.getElementById('show').innerHTML = s
         }
